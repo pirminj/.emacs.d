@@ -45,6 +45,7 @@
   (setq create-lockfiles nil)
   (setq custom-file "~/.emacs.d/custom.el")
   (load custom-file 'noerror 'nomessage)
+  (setq find-function-C-source-directory "~/src/emacs-29.3/src/")
   (setq inhibit-startup-screen t
 	kill-whole-line t
 	enable-recursive-minibuffers t
