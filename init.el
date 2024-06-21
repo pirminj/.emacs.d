@@ -131,23 +131,26 @@
 ;;; Completion
 
 (use-package vertico
-  :hook (minibuffer-setup . vertico-repeat-save)
-  :bind (("M-R" . vertivco-repeat)
-	 :map vertico-map
-	 ("M-;" . exit-minibuffer)
-	 ("M-q" . vertico-quick-exit)
-	 ("C-M-n"   . vertico-next-group)
-         ("C-M-p"   . vertico-previous-group)
-	 ("M-P" . vertico-repeat-previous)
-	 ("M-N" . vertico-repeat-next))
+  :ensure t
+  :bind (:map vertico-map
+	      ("M-;" . exit-minibuffer)
+	      ("M-q" . vertico-quick-exit)
+	      ("C-M-n"   . vertico-next-group)
+              ("C-M-p"   . vertico-previous-group))
   :init 
   (vertico-mode)
   (vertico-reverse-mode 1)
   :config
   (setq vertico-cycle t
 	vertico-resize t
-	vertico-count 12)
-  )
+	vertico-count 12))
+
+(use-package vertico-repeat
+  :hook (minibuffer-setup . vertico-repeat-save)
+  :bind (("M-R" . vertico-repeat)
+	 :map vertico-map
+	 ("M-P" . vertico-repeat-previous)
+	 ("M-N" . vertico-repeat-next)))
 
 (use-package vertico-multiform
   :after vertico
