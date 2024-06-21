@@ -1,5 +1,7 @@
 * My Emacs Configuration
 
+#+begin_quote
 Lines of Lisp align,
 In Emacs, I craft and code
 Infinite design.
+#+end_quote
