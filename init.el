@@ -39,6 +39,7 @@
 	 ("M-u" . upcase-dwim))
   :init
   (load-file "~/.emacs.d/lisp/private.el")
+  :hook (special-mode . hl-line-mode)
   :config
   (setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
   (setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-save-list/" t)))
@@ -199,7 +200,6 @@
 
 (use-package embark
   :ensure t
-  :hook (embark-collect-mode . hl-line-mode)
   :bind (("C-."   . embark-act)
 	 ("C-:"   . embark-act-all)
 	 ("M-."   . embark-dwim)
