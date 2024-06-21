@@ -596,7 +596,13 @@
 	  (define . "Define the word in one sentence. Use the language of the word")
 	  (connect . "Write about how the input connects to the topic of ")
 	  (chat . "You are a large language model and a conversation partner. Respond concisely.")
-	  (1word . "Distill the user input into one word"))))
+	  (1word . "Distill the user input into one word")
+	  (explain . "Explain the concept in simple terms.")
+	  (translate . "Translate the text to the requested language.")
+	  (review . "Provide a brief review or feedback on the input.")
+	  (summarize . "Summarize the input text in 2-3 sentences.")
+	  (contrast . "Contrast the following with the specified comparison.")
+	  (expand . "Expand on the given idea or statement."))))
 
 (use-package eglot
   :hook
