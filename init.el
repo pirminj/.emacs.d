@@ -74,6 +74,8 @@
 
 (use-package dired
   :hook (dired-mode . hl-line-mode)
+  :bind (:map dired-mode-map
+	      ("," . dired-up-directory))
   :custom
   (dired-dwim-target t)
   (dired-listing-switches "-lah"))
