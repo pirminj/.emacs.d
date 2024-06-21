@@ -131,6 +131,10 @@
   :bind (:map paredit-mode-map
 	      ("M-s" . nil)))
 
+(use-package aggressive-indent
+  :ensure t
+  :delight
+  :hook prog-mode)
 
 ;;; Completion
 
