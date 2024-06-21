@@ -1,0 +1,5 @@
+* My Emacs Configuration
+
+Lines of Lisp align,
+In Emacs, I craft and code
+Infinite design.
