@@ -582,7 +582,6 @@
 	 ("C-c C-<return>" . gptel-menu)
 	 ("C-c M-a" . gptel-abort))
   :config
-  ;; (load-file "~/.emacs.d/elpa/gptel-0.8.6/")
   (setq gptel-api-key (getenv "OPENAI_API_KEY"))
   (setq gptel-expert-commands t)
   (setq gptel-log-level 'info)
