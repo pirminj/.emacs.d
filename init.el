@@ -163,7 +163,7 @@
 	  (history reverse))))
 
 (use-package vertico-directory
-  :hook (rfn-eshadow-update-overlay vertico-directory-tidy)
+  :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :after vertico
   :bind (:map vertico-map
          ("DEL"   . vertico-directory-delete-char)
