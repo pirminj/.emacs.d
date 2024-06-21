@@ -419,8 +419,7 @@
 
 (use-package window
   :bind (("M-o" . other-window-alternating)
-	 ("M-U" . switch-to-next-buffer)
-	 ("M-K" . switch-to-prev-buffer))
+	 ("M-O" . (lambda () (interactive) (switch-to-buffer (other-buffer)))))
   :config
   (defalias 'other-window-alternating
     (let ((direction 1))
