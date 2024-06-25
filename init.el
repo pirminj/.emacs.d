@@ -559,10 +559,15 @@
   :custom-face (olivetti-fringe ((t :background unspecified)))
   :custom (olivetti-body-width 88))
 
-(use-package modus-themes)
+;; (use-package modus-themes)
 
 (use-package ef-themes
-  :ensure t)
+  :ensure t
+  :config
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    (if (and (>= hour 6) (< hour 18))
+        (load-theme 'ef-cypress t)
+      (load-theme 'ef-dream t))))
 
 (use-package spacious-padding
   :ensure t
