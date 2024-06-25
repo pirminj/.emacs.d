@@ -1,7 +1,7 @@
 ;;; init.el --- My emacs config -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; Go placidly among the noise and the haste, and remember what peace there may be in silence. 
+;; Go placidly among the noise and the haste, and remember what peace there may be in silence.
 
 ;;; Code:
 
@@ -18,49 +18,46 @@
 (eval-when-compile
   (require 'use-package))
 
-
-(setq debug-on-error t)
-
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
 (use-package emacs
-  ;; Some free keys!
-  :bind (("M-i")
-	 ("C-z")
+  :bind (("C-z")
 	 ("C-x C-z")
 	 ("M-\\")
 	 ("C-x C-o")
-	 ("C-x k" . (lambda () (interactive) (kill-buffer (current-buffer))))
 	 ("C-d" . delete-forward-char)
-	 ("M-n" . next-sexp)
-	 ("M-p" . previous-sexp)
 	 ("M-l" . downcase-dwim)
 	 ("M-c" . capitalize-dwim)
-	 ("M-u" . upcase-dwim))
+	 ("M-u" . upcase-dwim)
+	 ("M-m" . (lambda () (interactive) (find-file org-default-notes-file)))
+	 :map ctl-x-map
+	 ("k" . (lambda () (interactive) (kill-buffer (current-buffer)))))
+  :bind-keymap (("M-i" . ctl-x-map)) ; Much better ergonomics
   :init
   (load-file "~/.emacs.d/lisp/private.el")
   :hook (special-mode . hl-line-mode)
   :config
-  (setq backup-directory-alist `(("." . "~/.emacs.d/backups")))
-  (setq auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-save-list/" t)))
-  (setq create-lockfiles nil)
-  (setq custom-file "~/.emacs.d/custom.el")
-  (load custom-file 'noerror 'nomessage)
-  (setq find-function-C-source-directory "~/src/emacs-29.3/src/")
-  (setq inhibit-startup-screen t
+  (setq backup-directory-alist `(("." . "~/.emacs.d/backups"))
+	auto-save-file-name-transforms `((".*" "~/.emacs.d/auto-save-list/" t))
+	create-lockfiles nil
+	custom-file "~/.emacs.d/custom.el"
+	find-function-C-source-directory "~/src/emacs-29.3/src/"
+	inhibit-startup-screen t
 	kill-whole-line t
 	enable-recursive-minibuffers t
 	save-interprogram-paste-before-kill t
 	initial-scratch-message ""
 	y-or-n-p-use-read-key t
 	use-short-answers t
-	sentence-end-double-space nil)
+	sentence-end-double-space nil
+	tab-always-indent 'complete)
 
   (set-face-attribute 'default nil :family "Iosevka")
 
   (put 'narrow-to-region 'disabled nil)
   (put 'help-fns-edit-variable 'disabled nil)
   (put 'narrow-to-page 'disabled nil)
+  (put 'set-goal-column 'disabled nil)
 
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
@@ -80,6 +77,15 @@
   :custom
   (dired-dwim-target t)
   (dired-listing-switches "-lah"))
+
+(use-package eglot
+  :hook
+  (python-base-mode-hook . eglot-ensure)
+  :custom
+  (eglot-send-changes-idle-time 0.1)
+  (eglot-extend-to-xref t)
+  :config
+  (fset #'jsonrpc--log-event #'ignore))
 
 (use-package savehist
   :init (savehist-mode))
@@ -122,7 +128,113 @@
 (use-package eshell
   :bind (("C-c $" . eshell)))
 
+(use-package pixel-scroll
+  :config (pixel-scroll-precision-mode))
+
+(use-package gnus
+  :config
+  (setq gnus-select-method '(nntp "news.gmane.io")))
+
+(use-package comint
+  :ensure nil
+  :custom
+  (comint-prompt-read-only t)
+  :bind
+  (:map comint-mode-map
+        ("M-h" . consult-history)
+        ("M-r") ("M-s")))
+
+
 ;;; Editing
+
+(use-package meow
+  :load-path "~/.emacs.d/meow/"
+  :config
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore))
+  (meow-global-mode))
 
 (use-package paredit
   :hook ((emacs-lisp-mode . paredit-mode)
@@ -136,6 +248,7 @@
   :delight
   :hook prog-mode)
 
+
 ;;; Completion
 
 (use-package vertico
@@ -144,14 +257,14 @@
 	      ("M-;" . exit-minibuffer)
 	      ("M-q" . vertico-quick-exit)
 	      ("C-M-n"   . vertico-next-group)
-              ("C-M-p"   . vertico-previous-group))
-  :init 
-  (vertico-mode)
-  (vertico-reverse-mode 1)
+              ("C-M-p"   . vertico-previous-group)
+	      ("M-f" . vertico-exit)
+	      )
   :config
   (setq vertico-cycle t
 	vertico-resize t
-	vertico-count 12))
+	vertico-count 8)
+  (vertico-mode))
 
 (use-package vertico-repeat
   :hook (minibuffer-setup . vertico-repeat-save)
@@ -163,38 +276,43 @@
 (use-package vertico-multiform
   :after vertico
   :init (vertico-multiform-mode 1)
-  :config
-  (setq vertico-multiform-categories
-	'((embark-keybinding grid)
-	  (file grid)
-	  (imenu buffer)
-	  (history reverse))))
+  :custom
+  (vertico-multiform-commands '((consult-line unobtrusive)
+				(consult-buffer unobtrusive)))
+  (vertico-multiform-categories '((embark-keybinding grid)
+				  (file grid)
+				  (imenu buffer)
+				  (history reverse))))
 
 (use-package vertico-directory
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy)
   :after vertico
   :bind (:map vertico-map
-         ("DEL"   . vertico-directory-delete-char)
-         ("M-DEL" . vertico-directory-delete-word)
-         ("RET"   . vertico-directory-enter)))
-
+              ("DEL"   . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)
+              ("RET"   . vertico-directory-enter)))
 
 (use-package vertico-posframe
-  :disabled t
+  :disabled
   :custom
   (vertico-posframe-vertico-multiform-key "M-C")
   :config
   (vertico-posframe-mode 1))
 
-
 (use-package orderless
   :ensure t
   :custom
-  (completion-styles '(orderless flex basic))
+  (completion-styles '(orderless basic))
   (completion-category-defaults nil)
   (completion-category-overrides '((file (styles partial-completion))
-				   (command (styles initials substring orderless)))))
-
+				   (command (styles +orderless-with-initialism))
+				   (symbol (styles +orderless-with-initialism))
+				   (variable (styles +orderless-with-initialism))))
+  :config
+  (orderless-define-completion-style +orderless-with-initialism
+    (orderless-matching-styles '(orderless-initialism
+				 orderless-literal
+				 orderless-regexp))))
 
 (use-package marginalia
   :ensure t
@@ -224,6 +342,8 @@
                ("(" . insert-parentheses)
                ("[" . insert-pair-map)
 	       ("D" . dictionary-lookup-definition))
+	 :map embark-prose-map
+	 ("a" . gptel-translate)
 	 :map embark-general-map
 	 ("G" . pj/embark-google-search)
 	 :map embark-expression-map
@@ -231,26 +351,18 @@
 	 :map embark-variable-map
 	 ("a" . embark-act-with-eval))
   :config
-  (setq prefix-help-command #'embark-prefix-help-command)
-  (setq embark-confirm-act-all nil)
-  (setq embark-indicators
-        '(embark-minimal-indicator
-          embark-highlight-indicator
-          embark-isearch-highlight-indicator))
-  (setq embark-keymap-prompter-key "'")
+  (setq prefix-help-command #'embark-prefix-help-command
+	embark-confirm-act-all nil
+	embark-indicators '(embark-minimal-indicator
+			    embark-highlight-indicator
+			    embark-isearch-highlight-indicator)
+	embark-keymap-prompter-key "'")
+  ;; Disable kill-buffer confirmation
   (setf (alist-get 'kill-buffer embark-pre-action-hooks) nil)
-
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-		 q                 (window-parameters (mode-line-format . none))))
-
   (defun pj/embark-google-search (term)
     (interactive "sSearch Term: ")
     (browse-url
      (format "http://google.com/search?q=%s" term)))
-
   (defun embark-act-with-eval (expression)
     "Evaluate EXPRESSION and call `embark-act' on the result."
     (interactive "sExpression: ")
@@ -270,9 +382,8 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package consult
-  ;; Replace bindings. Lazily loaded due by `use-package'.
-  :bind (;; C-c bindings in `mode-specific-map'
-         ("C-c k" . consult-kmacro)
+  :ensure t
+  :bind (("C-c k" . consult-kmacro)
          ("C-c m" . consult-man)
          ("C-h j" . consult-info)
          ([remap Info-search] . consult-info)
@@ -311,47 +422,39 @@
          ("M-s L" . consult-line-multi)
          ("M-s k" . consult-keep-lines)
          ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
          ("M-s e" . consult-isearch-history)
          :map isearch-mode-map
          ("M-e" . consult-isearch-history) ;; orig. isearch-edit-string
          ("M-s e" . consult-isearch-history) ;; orig. isearch-edit-string
          ("M-s l" . consult-line) ;; needed by consult-line to detect isearch
          ("M-s L" . consult-line-multi)	;; needed by consult-line to detect isearch
-         ;; Minibuffer history
          :map minibuffer-local-map
-         ("M-h" . consult-history)
-	 )
-  :custom
-  (consult-narrow-key "<")
-  (completion-in-region-function #'consult-completion-in-region)
-  (xref-show-xrefs-function #'consult-xref)
-  (xref-show-definitions-function #'consult-xref)
+         ("M-h" . consult-history))
+  :custom ((consult-narrow-key "<")
+	   (completion-in-region-function #'consult-completion-in-region)
+	   (xref-show-xrefs-function #'consult-xref)
+	   (xref-show-definitions-function #'consult-xref))
   :init
-  ;; Registers
   (setq register-preview-delay 0.5
         register-preview-function #'consult-register-format)
   (advice-add #'register-preview :override #'consult-register-window)
-
   :config
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
-   :preview-key '(:debounce 0.4 any))
-  )
-
+  (consult-customize consult-buffer :preview-key nil
+		     consult-theme :preview-key '(:debounce 0.2 any)
+		     consult-ripgrep consult-git-grep consult-grep
+		     consult-bookmark consult-recent-file consult-xref
+		     consult--source-bookmark consult--source-file-register
+		     consult--source-recent-file consult--source-project-recent-file
+		     :preview-key '(:debounce 0.4 any)))
 
 (use-package consult-dir
-  :bind (("C-x C-d" . consult-dir)
+  :ensure t
+  :bind (("C-x M-d" . consult-dir)
          :map vertico-map
 	 ("C-M-d" . consult-dir)
          ("C-M-k" . consult-dir-jump-file))
   :config
   (setq consult-dir-shadow-filenames nil))
-
 
 (use-package corfu
   :bind (:map corfu-map
@@ -362,15 +465,13 @@
 	      ("M-;" . corfu-insert)
 	      ("M-." . corfu-show-location)
 	      ([tab] . corfu-next))
-  :custom 
-  (corfu-cycle t)
-  (corfu-auto t)
-  (corfu-separator ?\s)
-  (corfu-quit-no-match 'separator)
-  (corfu-on-exact-match 'insert) ;; Configure handling of exact matches
-  (corfu-echo-delay (cons 0.5 0.5))
+  :custom ((corfu-cycle t)
+	   (corfu-auto t)
+	   (corfu-separator ?\s)
+	   (corfu-quit-no-match 'separator)
+	   (corfu-on-exact-match 'insert)
+	   (corfu-echo-delay (cons 0.5 0.5)))
   :init
-  (global-corfu-mode)
   (corfu-history-mode)
   (corfu-echo-mode))
 
@@ -380,22 +481,7 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file))
 
-
-
 ;;; Navigation
-
-(use-package ace-window
-  :disabled t
-  :bind (("M-o" . pj/switch-window))
-  :custom (ace-window-posframe-mode 1)
-  :config
-  (defun pj/switch-window ()
-    "If there is only on window open, switch to the most recent buffer."
-    (interactive)
-    (if (= 1 (count-windows))
-	(switch-to-buffer (other-buffer))
-      (call-interactively 'ace-window))))
-
 
 (use-package avy
   :bind (("M-j"   . avy-goto-char-timer)
@@ -442,12 +528,15 @@
             (other-window (* direction (or arg 1)))
           (setq direction (- direction))
           (other-window (* direction (or arg 1)))))))
-    )
+  )
+
+(use-package winner-mode
+  :hook after-init)
 
 (use-package popper
-  :disabled nil
-  :bind (("C-`"   . popper-toggle)
-         ("C-~'"  . popper-cycle)
+  ;; :disabled
+  :bind (("C-c f"   . popper-toggle)
+         ("M-`"  . popper-cycle)
          ("C-M-`" . popper-toggle-type))
   :init
   (setq popper-reference-buffers
@@ -458,9 +547,6 @@
   (popper-mode +1)
   (popper-echo-mode +1))
 
-(use-package winner-mode
-  :hook after-init)
-
 ;;; Appearance
 
 (use-package mixed-pitch
@@ -468,23 +554,22 @@
   :custom (mixed-pitch-variable-pitch-cursor nil))
 
 (use-package olivetti
-  :bind ("C-c x o" . olivetti-mode)
+  :ensure t
+  :bind ("C-c o" . olivetti-mode)
   :custom-face (olivetti-fringe ((t :background unspecified)))
   :custom (olivetti-body-width 88))
 
-(use-package modus-themes
-  :config (load-theme 'modus-operandi t))
+(use-package modus-themes)
 
 (use-package ef-themes
   :ensure t)
 
 (use-package spacious-padding
   :ensure t
-  :config			       
+  :config
   (spacious-padding-mode) ; doesn't load correctly first time. Is fixed in master
   (spacious-padding-mode)
   (spacious-padding-mode))
-
 
 ;;; Org
 
@@ -496,7 +581,10 @@
 	 :map org-mode-map
 	 ("C-c l d" . org-toggle-link-display)
 	 ("C-'")
-	 ("C-c RET"))
+	 ("C-c RET")
+	 ("M-g M-h" . consult-org-heading)
+	 ("M-n" . org-next-item)
+	 ("M-p" . org-previous-item))
   :hook
   ((org-mode . org-modern-mode)
    (org-mode . hl-line-mode))
@@ -506,9 +594,13 @@
 	org-use-speed-commands t
 	org-confirm-elisp-link-function nil
 	org-startup-indented t
-	org-startup-folded 'show2levels)
+	org-startup-folded 'show2levels
+	org-refile-targets '((nil :maxlevel . 3)
+			     (org-agenda-files :maxlevel . 3))
+	org-refile-use-outline-path nil)
+  
   (setq org-blank-before-new-entry '((heading . t)
-                                     (plain-list-item . auto)))
+				     (plain-list-item . auto)))
   (setq org-capture-templates
 	'(
 	  ("j" "Journal Entry" entry
@@ -556,6 +648,8 @@
 
 (use-package magit :ensure t)
 
+(use-package nov :ensure t :mode ("\\.epub\\'" . nov-mode))
+
 (use-package pdf-tools
   :defer 3
   :bind (:map pdf-view-mode-map
@@ -566,26 +660,62 @@
   (setq-default pdf-view-display-size 'fit-page)
   :hook (pdf-view-mode . auto-revert-mode))
 
+;;; TeX
+
+(use-package tex
+  :ensure auctex
+  :defer t
+  :hook
+  (LaTeX-mode . visual-line-mode)
+  (LaTeX-mode . jinx-mode)
+  (LaTeX-mode . prettify-symbols-mode)
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq TeX-PDF-mode t)
+  (setq TeX-source-correlate-mode t)
+  (setq TeX-source-correlate-start-server t)
+  (add-hook 'TeX-mode-hook (lambda () (TeX-fold-mode 1)))
+  (setq TeX-clean-confirm nil))
+
+(use-package cdlatex
+  :hook (LaTeX-mode . cdlatex-mode)
+  :config
+  (setq cdlatex-paired-parens "$[{")) ;; Paired parentheses for math-mode
+
+(use-package auctex-latexmk
+  :ensure t
+  :hook (LaTeX-mode . auctex-latexmk-setup)
+  :config
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+
 (use-package reftex
   :defer t
   :hook (LaTeX-mode . reftex-mode)
   :config
   (setq reftex-plug-into-AUCTeX t))
 
+;;; Guix
+
 (use-package guix)
 
 (with-eval-after-load 'guix-repl
-    (setq guix-guile-program  '("guix" "repl")
-          guix-config-scheme-compiled-directory  nil
-          guix-repl-use-latest  nil
-          guix-repl-use-server  nil))
+  (setq guix-guile-program  '("guix" "repl")
+        guix-config-scheme-compiled-directory  nil
+        guix-repl-use-latest  nil
+        guix-repl-use-server  nil))
+
+;;; LLM
 
 (use-package gptel
   :load-path "~/.emacs.d/gptel/"
   :bind (("C-c RET" . gptel-send)
 	 ("C-c C-<return>" . gptel-menu)
-	 ("C-c M-a" . gptel-abort))
+	 ("C-c M-a" . gptel-abort)
+	 :map ctl-x-map
+	 ("M-a" . gptel-add))
   :config
+  (load-file "~/.emacs.d/gptel/gptel-context.el")
   (setq gptel-api-key (getenv "OPENAI_API_KEY"))
   (setq gptel-expert-commands t)
   (setq gptel-log-level 'info)
@@ -608,28 +738,13 @@
 	  (contrast . "Contrast the following with the specified comparison.")
 	  (expand . "Expand on the given idea or statement."))))
 
-(use-package eglot
-  :hook
-  (python-base-mode-hook . eglot-ensure)
-  :custom
-  (eglot-send-changes-idle-time 0.1)
-  (eglot-extend-to-xref t)
-  :config
-  (fset #'jsonrpc--log-event #'ignore))
-
-(use-package nov :ensure t :mode ("\\.epub\\'" . nov-mode))
-
-(use-package comint
-  :ensure nil
-  :custom
-  (comint-prompt-read-only t)
-  :bind
-  (:map comint-mode-map
-        ("M-h" . consult-history)
-        ("M-r") ("M-s")))
-
-
 ;;; My utils
+
+(defun gptel-translate (prose)
+  (gptel-request prose
+		 :system "Translate the input into standard English"
+		 :in-place t
+		 :stream t))
 
 (defun insert-date ()
   "Insert the current date and time in ISO xxx."
@@ -649,30 +764,23 @@
     (delete-region start end)
     (insert output)))
 
-;;; Cool elisp file strolling
-
 (defun narrow-to-sexp ()
   (mark-sexp)
   (narrow-to-region (region-beginning) (region-end))
   (deactivate-mark))
 
-(defun next-sexp ()
-  "Narrow to next sexp"
+(defun consult-info-emacs ()
+  "Search through Emacs info pages."
   (interactive)
-  (widen)
-  (forward-sexp 2)
-  (backward-sexp)
-  (narrow-to-sexp))
+  (consult-info "emacs" "efaq" "elisp" "cl" "compat"))
 
-(defun previous-sexp ()
-  "Narrow to previous sexp"
+(defun consult-info-completion ()
+  "Search through completion info pages."
   (interactive)
-  (widen)
-  (backward-sexp)
-  (narrow-to-sexp))
-
+  (consult-info "vertico" "consult" "marginalia" "orderless" "embark"
+                "corfu" "cape"))
 
 (provide 'init)
 
-;;; init.el ends here
 
+;; (advice-add 'forward-paragraph :after #'(recenter-top-bottom '(4)))
