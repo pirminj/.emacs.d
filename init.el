@@ -653,7 +653,10 @@
   :delight
   :custom (jinx-languages "en de")
   :bind (("M-$" . jinx-correct)
-         ("C-M-$" . jinx-languages)))
+         ("C-M-$" . jinx-languages))
+  :config
+  (add-to-list 'vertico-multiform-categories
+               '(jinx grid (vertico-grid-annotate . 20))))
 
 (use-package magit :ensure t)
 
