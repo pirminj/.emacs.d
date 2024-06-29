@@ -154,6 +154,21 @@
         ("M-h" . consult-history)
         ("M-r") ("M-s")))
 
+;;; System
+
+(use-package exec-path-from-shell
+  :ensure t
+  :defer 0.1
+  :config
+  (exec-path-from-shell-initialize))
+
+(use-package keyfreq
+  :defer 0.1
+  :ensure t
+  :config
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))
+
 
 ;;; Editing
 
