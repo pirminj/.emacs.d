@@ -519,7 +519,12 @@
 
 (use-package window
   :bind (("M-o" . other-window-alternating)
-	 ("M-O" . (lambda () (interactive) (switch-to-buffer (other-buffer)))))
+	 ("M-O" . (lambda () (interactive) (switch-to-buffer (other-buffer))))
+	 :map ctl-x-map
+	 ("M-f" . (lambda () (interactive)
+		    (if (one-window-p)
+			(winner-undo)
+		      (delete-other-windows)))))
   :config
   (defalias 'other-window-alternating
     (let ((direction 1))
