@@ -159,6 +159,8 @@
 
 (use-package meow
   :load-path "~/.emacs.d/meow/"
+  :bind (:map meow-motion-state-keymap
+	      ("SPC"))
   :config
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-motion-overwrite-define-key
