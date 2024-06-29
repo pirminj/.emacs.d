@@ -76,7 +76,11 @@
 	      ("," . dired-up-directory))
   :custom
   (dired-dwim-target t)
-  (dired-listing-switches "-lah"))
+  (dired-listing-switches "-lah --group-directories-first")
+  (dired-recursive-copies 'always)
+  (dired-recursive-deletes 'always)
+  (dired-kill-when-opening-new-dired-buffer t)
+  (dired-do-revert-buffer t))
 
 (use-package eglot
   :hook
