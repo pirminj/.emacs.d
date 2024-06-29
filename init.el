@@ -100,10 +100,13 @@
   (save-place-mode 1))
 
 (use-package recentf
-  :config (recentf-mode 1))
+  :hook after-init)
 
 (use-package elec-pair
-  :config (electric-pair-mode 1))
+  :hook (after-init . electric-pair-mode))
+
+(use-package repeat
+  :hook after-init)
 
 (use-package crm
   :init
@@ -261,9 +264,7 @@
 	      ("M-;" . exit-minibuffer)
 	      ("M-q" . vertico-quick-exit)
 	      ("C-M-n"   . vertico-next-group)
-              ("C-M-p"   . vertico-previous-group)
-	      ("M-f" . vertico-exit)
-	      )
+              ("C-M-p"   . vertico-previous-group))
   :config
   (setq vertico-cycle t
 	vertico-resize t
@@ -575,7 +576,7 @@
   :config
   (let ((hour (string-to-number (format-time-string "%H"))))
     (if (and (>= hour 6) (< hour 18))
-        (load-theme 'ef-cypress t)
+        (load-theme 'ef-cyprus t)
       (load-theme 'ef-dream t))))
 
 (use-package spacious-padding
