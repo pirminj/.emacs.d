@@ -51,6 +51,9 @@
 	use-short-answers t
 	sentence-end-double-space nil
 	tab-always-indent 'complete)
+  (setq scroll-margin 1
+	scroll-preserve-screen-position t
+	next-screen-context-lines 3)
 
   (set-face-attribute 'default nil :family "Iosevka")
 
