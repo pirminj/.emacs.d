@@ -155,6 +155,13 @@
 
 ;;; System
 
+(use-package exwm
+  :disabled
+  :config
+  (setq display-time-default-load-average nil)
+  (display-time-mode t)
+  (setq exwm-workspace-number 4))
+
 (use-package exec-path-from-shell
   :ensure t
   :defer 0.1
