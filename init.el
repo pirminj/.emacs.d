@@ -175,6 +175,11 @@
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
+(use-package browser-hist
+  :ensure t
+  :custom (browser-hist-default-browser 'firefox)
+  )
+
 (use-package direnv
   :ensure t
   :config (direnv-mode))
@@ -285,8 +290,32 @@
   :delight
   :hook prog-mode)
 
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . er/expand-region))
+
 
 ;;; Completion
+
+(use-package hippie-expand
+  :bind (("M-l" . hippie-expand))
+  :config
+  (setq hippie-expand-try-functions-list
+        '(try-expand-dabbrev
+          try-expand-dabbrev-all-buffers
+          try-expand-dabbrev-from-kill
+          try-complete-file-name-partially
+          try-complete-file-name
+          ;; try-expand-all-abbrevs
+          try-expand-list
+          try-expand-line
+          try-complete-lisp-symbol-partially
+          try-complete-lisp-symbol))
+  (setq hippie-expand-verbose t)
+  (setq case-fold-search t)
+  :custom
+  (dabbrev-case-replace nil "Keep original case of expansion"))
+
 
 (use-package vertico
   :ensure t
