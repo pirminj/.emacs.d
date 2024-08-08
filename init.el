@@ -50,14 +50,12 @@
 	use-short-answers t
 	sentence-end-double-space nil
 	tab-always-indent 'complete)
-  (setq scroll-margin 1
-	scroll-preserve-screen-position t
+  (setq scroll-preserve-screen-position t
 	next-screen-context-lines 3)
 
   (set-face-attribute 'default nil :family "Iosevka")
 
   (put 'narrow-to-region 'disabled nil)
-  (put 'help-fns-edit-variable 'disabled nil)
   (put 'narrow-to-page 'disabled nil)
   (put 'set-goal-column 'disabled nil)
 
