@@ -765,6 +765,11 @@
   (setq-default pdf-view-display-size 'fit-page)
   :hook (pdf-view-mode . auto-revert-mode))
 
+(use-package mastodon
+  :config
+  (setq mastodon-instance-url "https://floss.social"
+	mastodon-active-user "pirmin"))
+
 ;;; TeX
 
 (use-package tex
