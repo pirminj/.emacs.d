@@ -715,6 +715,25 @@
 
 ;;; Features
 
+(use-package consult-omni
+  :load-path "~/.emacs.d/consult-omni"
+  :after consult
+  :bind (("M-s M-o" . consult-omni))
+  :custom
+  (consult-omni-show-preview nil)
+  (consult-omni-preview-key "C-o")
+  :config
+  (require 'consult-omni-sources)
+  (require 'consult-omni-embark)
+  
+  ;; Only load wikipedia source
+  (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia))
+  (consult-omni-sources-load-modules)
+
+  ;;; Set your shorthand favorite interactive command
+  (setq consult-omni-default-interactive-command #'consult-omni-multi)
+  )
+
 (use-package wgrep
   :ensure t)
 
