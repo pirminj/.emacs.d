@@ -175,6 +175,9 @@
   (keyfreq-mode 1)
   (keyfreq-autosave-mode 1))
 
+(use-package direnv
+  :ensure t
+  :config (direnv-mode))
 
 ;;; Editing
 
