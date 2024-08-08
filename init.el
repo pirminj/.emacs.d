@@ -58,6 +58,8 @@
   (put 'narrow-to-region 'disabled nil)
   (put 'narrow-to-page 'disabled nil)
   (put 'set-goal-column 'disabled nil)
+  (put 'list-timers 'disabled nil)
+  (put 'help-fns-edit-variable 'disabled nil)
 
   ;; Do not allow the cursor in the minibuffer prompt
   (setq minibuffer-prompt-properties
@@ -326,11 +328,11 @@
               ("RET"   . vertico-directory-enter)))
 
 (use-package vertico-posframe
-  :disabled
   :custom
   (vertico-posframe-vertico-multiform-key "M-C")
   :config
-  (vertico-posframe-mode 1))
+  ;; (vertico-posframe-mode 1)
+  )
 
 (use-package orderless
   :ensure t
@@ -472,6 +474,7 @@
         register-preview-function #'consult-register-format)
   (advice-add #'register-preview :override #'consult-register-window)
   :config
+  (setq consult-ripgrep-args "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --with-filename --line-number --search-zip -uuu")
   (consult-customize consult-buffer :preview-key nil
 		     consult-theme :preview-key '(:debounce 0.2 any)
 		     consult-ripgrep consult-git-grep consult-grep
@@ -513,6 +516,8 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file))
+
+
 
 ;;; Navigation
 
@@ -644,6 +649,8 @@
   
   (setq org-blank-before-new-entry '((heading . t)
 				     (plain-list-item . auto)))
+  
+  ;; (info "(org) Template expansion")
   (setq org-capture-templates
 	'(
 	  ("j" "Journal Entry" entry
@@ -652,11 +659,11 @@
            :empty-lines 1)
 	  ("t" "Task" entry
 	   (file+headline org-default-notes-file "Tasks")
-           "* TODO %?\n"
+           "* TODO %?\n%i\n%a"
            )
 	  ("e" "Emacs yakshaving" entry
 	   (file+headline org-default-notes-file "Emacs")
-	   "* %^{Title}\n%u\n%i\n")
+	   "* %?\n%u\n%i\n%l")
 	  ("n" "Note" entry
 	   (file org-default-notes-file)
            "* %?"
@@ -788,9 +795,9 @@
 
 (defun gptel-translate (prose)
   (gptel-request prose
-		 :system "Translate the input into standard English"
-		 :in-place t
-		 :stream t))
+    :system "Translate the input into standard English"
+    :in-place t
+    :stream t))
 
 (defun insert-date ()
   "Insert the current date and time in ISO xxx."
@@ -828,5 +835,3 @@
 
 (provide 'init)
 
-
-;; (advice-add 'forward-paragraph :after #'(recenter-top-bottom '(4)))
