@@ -24,7 +24,6 @@
   :bind (("C-z")
 	 ("C-x C-z")
 	 ("M-\\")
-	 ("C-x C-o")
 	 ("C-d" . delete-forward-char)
 	 ("M-l" . downcase-dwim)
 	 ("M-c" . capitalize-dwim)
