@@ -749,6 +749,10 @@
 
 (use-package magit :ensure t)
 
+(use-package forge
+  :ensure t
+  :after 'magit)
+
 (use-package nov :ensure t :mode ("\\.epub\\'" . nov-mode))
 
 (use-package pdf-tools
