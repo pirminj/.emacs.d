@@ -805,6 +805,28 @@
   :config
   (setq reftex-plug-into-AUCTeX t))
 
+;;; Languages
+
+(use-package sly
+  :ensure t
+  :init
+  (setq inferior-lisp-program "/usr/local/bin/sbcl")
+  :config
+  ;; (setq sly-complete-symbol-function 'sly-simple-completions) 
+  ;; (setq sly-net-coding-system 'utf-8-unix)
+  ;; Optional: Add additional sly packages for better experience
+  ;; (use-package sly-quicklisp
+  ;;   :ensure t)
+  ;; (use-package sly-repl-ansi-color
+  ;;   :ensure t)
+  ;; (use-package sly-asdf
+  ;;   :ensure t)
+  ;; (use-package sly-macrostep
+  ;;   :ensure t)
+  ;; (use-package sly-named-readtables
+  ;;   :ensure t)
+  )
+
 ;;; Guix
 
 (use-package guix)
