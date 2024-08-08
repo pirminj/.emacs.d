@@ -182,6 +182,7 @@
 ;;; Editing
 
 (use-package meow
+  :disabled
   :load-path "~/.emacs.d/meow/"
   :bind (:map meow-motion-state-keymap
 	      ("SPC"))
