@@ -848,7 +848,27 @@
 	 ("M-a" . gptel-add))
   :config
   (load-file "~/.emacs.d/gptel/gptel-context.el")
+  (load-file "~/.emacs.d/gptel/gptel-quick.el")
   (setq gptel-api-key (getenv "OPENAI_API_KEY"))
+
+  (gptel-make-gemini "Gemini"
+    :key (getenv "GEMINI_API_KEY")
+    :stream t)
+
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key (getenv "ANTHROPIC_API_KEY"))
+
+  (gptel-make-openai "Groq"
+    :host "api.groq.com"
+    :endpoint "/openai/v1/chat/completions"
+    :stream t
+    :key (getenv "GROQ_API_KEY")
+    :models '("llama-3.1-70b-versatile"
+              "llama-3.1-8b-instant"
+              "mixtral-8x7b-32768"
+              "gemma-7b-it"))
+
   (setq gptel-expert-commands t)
   (setq gptel-log-level 'info)
   (setq gptel-model "gpt-4o")
